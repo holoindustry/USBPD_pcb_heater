@@ -1,0 +1,4 @@
+(fp_lib_table
+	(version 7)
+	(lib (name "fable") (type "KiCad") (uri "${KIPRJMOD}/../lib/fable.pretty") (options "") (descr "poc_fable footprints"))
+)

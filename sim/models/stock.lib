@@ -1,0 +1,25 @@
+* Glue for sim/manual. No device model in this file was written for the project:
+*
+*   LM393.sub   the long-circulated LM393 macromodel (header: "created using PARTS version 4.03 on
+*               03/07/90"), included unchanged. Its origin could not be confirmed; the copy is
+*               from github.com/semianalog/mod12003. It has a PNP input pair, so an input above
+*               the supply simply turns its transistor off, as note 8 of the onsemi data sheet
+*               describes.
+*   AO3400A_L1  the SPICE level-1 MOSFET with six numbers taken or derived from the typical
+*               values of the AOS data sheet rev 3.1: threshold 1.05 V; KP, RD and RS from RDS(on)
+*               19 mohm at 4.5 V and 24 mohm at 2.5 V; gate-source 580 pF (Ciss - Crss) and
+*               gate-drain 50 pF (Crss at 15 V), as overlap capacitances of the default 100 um
+*               wide device.
+.include "LM393.sub"
+
+* the two comparators of one package, pins in the order of the SOIC-8
+.subckt LM393_PACKAGE outa inan inap vee inbp inbn outb vcc
+XA inap inan vcc vee outa LM393
+XB inbp inbn vcc vee outb LM393
+.ends
+
+* three-pin wrapper: the bulk is tied to the source, as in the part
+.subckt AO3400A_L1 d g s
+M1 d g s s AO3400A_M1
+.model AO3400A_M1 NMOS(level=1 VTO=1.05 KP=80 RD=9.4m RS=6m CGSO=5.8u CGDO=0.5u)
+.ends

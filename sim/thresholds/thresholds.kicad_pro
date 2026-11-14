@@ -1,0 +1,27 @@
+{
+  "meta": {
+    "filename": "thresholds.kicad_pro",
+    "version": 3
+  },
+  "schematic": {
+    "meta": {
+      "version": 1
+    },
+    "ngspice": {
+      "fix_include_paths": true,
+      "fix_passive_vals": false,
+      "meta": {
+        "version": 0
+      },
+      "model_mode": 1,
+      "workbook_filename": "thresholds.wbk"
+    }
+  },
+  "sheets": [
+    [
+      "f354d4f6-b9cc-50d1-ab73-b4921408d817",
+      "Root"
+    ]
+  ],
+  "text_variables": {}
+}

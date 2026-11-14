@@ -1,0 +1,57 @@
+* Models for the simulation schematics of the USB-C PCB heater (sim/loop, sim/thresholds).
+* Plain ngspice syntax; written for this project, not vendor models.
+
+* ---------------------------------------------------------------------------------------------
+* One comparator of an LM393: open-collector output, behavioural.
+*
+*   vos    input offset voltage (the output is released while V(in+) - V(in-) > vos); the
+*          datasheet gives +-1 mV typical, +-5 mV maximum at 25 C
+*   ib     input bias current, flows out of both inputs (25 nA typical, 250 nA maximum)
+*   vhead  the inputs work up to VCC - vhead: 1.5 V at 25 C, 2.0 V over the whole temperature range
+*   oor    output while BOTH inputs are above that range, where the datasheet promises nothing:
+*          1 = released (high), 0 = pulled low. With one input inside the range the output is
+*          correct, as the datasheet states.
+*   ron    output transistor when on (about 130 mV at 4 mA)
+*   tpd    response time
+*
+* The output is a switch with a little hysteresis of its own: it closes 21 uV below and opens
+* 21 uV above the point where the inputs are equal (0.005 K of an NTC node here). Versions of
+* this model that were analog all the way through lost convergence in ngspice at some of the
+* switching edges, where the feedback resistor makes the comparator snap.
+*
+* Not modelled: output current limit (about 16 mA), supply below 2 V, temperature.
+.subckt LM393_CMP inp inn vcc vee out params: vos=0 ib=25n vhead=1.5 oor=1 ron=33 tpd=1.3u
+.param cdel={tpd/1000000}
+.param pullout={1-oor}
+Ibp vee inp dc {ib}
+Ibn vee inn dc {ib}
+Iq  vcc vee dc 200u
+* V(pulld) = 1: pull the output low. A current into 1 Mohm with tpd of delay (no ideal voltage
+* source, whose branch current would have to converge to 1 pA). Both inputs above the range
+* fades the decision over to {pullout}, 20 mV wide.
+Bpull 0 pulld i = 1u * ( {pullout}
++ + (1 - 0.25 * (1 + tanh((V(inp,vee) - V(vcc,vee) + {vhead}) / 10m)) * (1 + tanh((V(inn,vee) - V(vcc,vee) + {vhead}) / 10m)))
++ * (0.5 * (1 - tanh(2e4 * (V(inp,inn) - {vos}))) - {pullout}) )
+Rd pulld 0 1000000
+Cd pulld 0 {cdel}
+Sout out vee pulld 0 LM393_SW
+.model LM393_SW sw(vt=0.5 vh=0.2 ron={ron} roff=1G)
+Cout out vee 10p
+.ends
+
+* Both comparators of the package, pins in the order of the SOIC-8.
+.subckt LM393_DUAL outa inan inap vee inbp inbn outb vcc params: vos=0 ib=25n vhead=1.5 oor=1 ron=33 tpd=1.3u
+XA inap inan vcc vee outa LM393_CMP vos={vos} ib={ib} vhead={vhead} oor={oor} ron={ron} tpd={tpd}
+XB inbp inbn vcc vee outb LM393_CMP vos={vos} ib={ib} vhead={vhead} oor={oor} ron={ron} tpd={tpd}
+.ends
+
+* ---------------------------------------------------------------------------------------------
+* AO3400A, from the typical values of the AOS datasheet rev 3.1 (July 2023):
+* Vth 1.05 V; RDS(on) 19 mohm at 4.5 V, 24 mohm at 2.5 V; gfs 33 S; Ciss 630 pF, Coss 75 pF,
+* Crss 50 pF at 15 V; Rg 3 ohm; Qg 6 nC, Qgs 1.3 nC, Qgd 1.8 nC; body diode 0.7 V at 1 A.
+.model AO3400A VDMOS(Rg=3 Vto=1.05 Kp=80 Rd=9.4m Rs=6m
++ Cgdmax=250p Cgdmin=50p A=0.5 Cgs=580p Cjo=118p M=0.5 VJ=0.7 Is=1.7p N=1 Rb=20m)
+
+* ---------------------------------------------------------------------------------------------
+* Yellow 0805 LED, about 2.0 V at 4 mA.
+.model LED_YELLOW D(Is=1e-20 N=1.9 Rs=5 Cjo=20p)

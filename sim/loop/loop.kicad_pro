@@ -1,0 +1,27 @@
+{
+  "meta": {
+    "filename": "loop.kicad_pro",
+    "version": 3
+  },
+  "schematic": {
+    "meta": {
+      "version": 1
+    },
+    "ngspice": {
+      "fix_include_paths": true,
+      "fix_passive_vals": false,
+      "meta": {
+        "version": 0
+      },
+      "model_mode": 1,
+      "workbook_filename": "loop.wbk"
+    }
+  },
+  "sheets": [
+    [
+      "77130d66-d234-5f85-81d0-9fa3d2071388",
+      "Root"
+    ]
+  ],
+  "text_variables": {}
+}

@@ -1,0 +1,17 @@
+production/
+*-backups/
+*.bak
+*.lck
+*.png
+*-bak
+*.gbr
+*.drl
+_autosave*
+*.step
+*.zip
+*.dxf
+*.gbrjob
+fabrication-toolkit-options.json
+__pycache__
+*.pdf
+build

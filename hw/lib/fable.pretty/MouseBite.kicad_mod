@@ -1,0 +1,75 @@
+(footprint "MouseBite"
+	(version 20260206)
+	(generator "pcbnew")
+	(generator_version "10.0")
+	(layer "F.Cu")
+	(descr "Three 0.5 mm holes across a break-off tab, on the edge of the heater zone")
+	(property "Reference" "REF**"
+		(at 0 0 0)
+		(layer "F.SilkS")
+		(hide yes)
+		(uuid "41119ea5-76da-439a-a7c4-3c2ee2aee1bb")
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+		)
+	)
+	(property "Value" "MouseBite"
+		(at 0 0 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "413becba-6572-4fa6-8201-83006b691984")
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+		)
+	)
+	(property "Datasheet" ""
+		(at 0 0 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "734a8d91-ab53-49f9-ba12-e046fc837331")
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+		)
+	)
+	(property "Description" ""
+		(at 0 0 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "93037b37-acf1-48cf-af6d-30255afd3a34")
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+		)
+	)
+	(attr exclude_from_pos_files exclude_from_bom)
+	(duplicate_pad_numbers_are_jumpers no)
+	(pad "" np_thru_hole circle
+		(at 0 -0.9)
+		(size 0.5 0.5)
+		(drill 0.5)
+		(layers "*.Cu" "*.Mask")
+		(uuid "83df337d-b8ff-4406-a234-38f6bca41c8c")
+	)
+	(pad "" np_thru_hole circle
+		(at 0 0)
+		(size 0.5 0.5)
+		(drill 0.5)
+		(layers "*.Cu" "*.Mask")
+		(uuid "869d21da-2fd5-48e2-b9f7-f6f8c3395b06")
+	)
+	(pad "" np_thru_hole circle
+		(at 0 0.9)
+		(size 0.5 0.5)
+		(drill 0.5)
+		(layers "*.Cu" "*.Mask")
+		(uuid "04a72d9c-03ce-4118-9298-1cd625e4767d")
+	)
+	(embedded_fonts no)
+)

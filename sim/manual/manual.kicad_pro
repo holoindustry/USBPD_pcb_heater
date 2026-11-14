@@ -1,0 +1,27 @@
+{
+  "meta": {
+    "filename": "manual.kicad_pro",
+    "version": 3
+  },
+  "schematic": {
+    "meta": {
+      "version": 1
+    },
+    "ngspice": {
+      "fix_include_paths": true,
+      "fix_passive_vals": false,
+      "meta": {
+        "version": 0
+      },
+      "model_mode": 1,
+      "workbook_filename": "manual.wbk"
+    }
+  },
+  "sheets": [
+    [
+      "b6960132-52ce-5200-b6e6-009a51cda4f5",
+      "Root"
+    ]
+  ],
+  "text_variables": {}
+}

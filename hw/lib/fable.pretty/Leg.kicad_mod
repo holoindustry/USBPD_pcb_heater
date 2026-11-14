@@ -1,0 +1,106 @@
+(footprint "Leg"
+	(version 20260206)
+	(generator "pcbnew")
+	(generator_version "10.0")
+	(layer "F.Cu")
+	(descr "FR-4 leg: bare copper on both faces for soldering into a LegSlot")
+	(property "Reference" "REF**"
+		(at 0 0 0)
+		(layer "F.SilkS")
+		(hide yes)
+		(uuid "e50bfa20-ea0c-46c4-b124-439919ad2c2e")
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+		)
+	)
+	(property "Value" "Leg"
+		(at 0 0 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "3ed34884-c020-449c-84f2-bc105edd135b")
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+		)
+	)
+	(property "Datasheet" ""
+		(at 0 0 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "b7bf7f5b-dc62-4ffb-be7e-5eebdd203794")
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+		)
+	)
+	(property "Description" ""
+		(at 0 0 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "ded9d4a8-141d-448b-a05a-250fea9c9bfb")
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+		)
+	)
+	(attr smd exclude_from_pos_files exclude_from_bom)
+	(duplicate_pad_numbers_are_jumpers no)
+	(fp_poly
+		(pts
+			(xy -4.5 2.55) (xy 4.5 2.55) (xy 4.5 0.35) (xy 2.65 0.35) (xy 2.65 -0.999999) (xy -2.65 -0.999999)
+			(xy -2.65 0.35) (xy -4.5 0.35)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(fill yes)
+		(layer "F.Cu")
+		(uuid "b17a186f-fac1-4f27-afba-aadad1435fd8")
+	)
+	(fp_poly
+		(pts
+			(xy -4.5 2.55) (xy 4.5 2.55) (xy 4.5 0.35) (xy 2.65 0.35) (xy 2.65 -0.999999) (xy -2.65 -0.999999)
+			(xy -2.65 0.35) (xy -4.5 0.35)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(fill yes)
+		(layer "F.Mask")
+		(uuid "6900f9aa-7601-4d06-85ab-9d67fe4b4156")
+	)
+	(fp_poly
+		(pts
+			(xy -4.5 2.55) (xy 4.5 2.55) (xy 4.5 0.35) (xy 2.65 0.35) (xy 2.65 -0.999999) (xy -2.65 -0.999999)
+			(xy -2.65 0.35) (xy -4.5 0.35)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(fill yes)
+		(layer "B.Cu")
+		(uuid "30f77dd1-6038-43fa-af47-39abdb7ad37e")
+	)
+	(fp_poly
+		(pts
+			(xy -4.5 2.55) (xy 4.5 2.55) (xy 4.5 0.35) (xy 2.65 0.35) (xy 2.65 -0.999999) (xy -2.65 -0.999999)
+			(xy -2.65 0.35) (xy -4.5 0.35)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(fill yes)
+		(layer "B.Mask")
+		(uuid "4d6e05fa-fbab-47a3-bedb-7e5bb02ba51e")
+	)
+	(embedded_fonts no)
+)

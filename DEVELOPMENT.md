@@ -1,6 +1,6 @@
 # Development history
 
-`README.md` describes the heater as it is now. This file is the long version of how it got there: what was asked, what was tried, what was thrown away, which numbers moved and why, and what went wrong along the way. It covers 10 to 14 November 2026. Times are local (CET). Nothing described here has been built or powered: every temperature, time and power figure is from the project's own models.
+`README.md` and the documents it links describe the heater as it is now. This file is the long version of how it got there: what was asked, what was tried, what was thrown away, which numbers moved and why, and what went wrong along the way. It covers 10 to 14 November 2026. Times are local (CET). Nothing described here has been built or powered: every temperature, time and power figure is from the project's own models.
 
 The project was worked on in one long session between the owner and an AI assistant (Claude). "The assistant" below means that; "the owner" is the person who asked for the board, routed it by hand and made the decisions.
 
@@ -20,6 +20,7 @@ The project was worked on in one long session between the owner and an AI assist
 | 14 Nov, night | Review of the routed board; REF1 safety gap found and closed; anchor vias restored; dial added and reverted |
 | 14 Nov, morning | R6 moved ahead of the trimmer; pre-order check |
 | 14 Nov, afternoon | USB-C socket replaced by a cheaper one; final export checked; pictures made for the repository |
+| 14 Nov, evening | STM32 variant removed from the repository; documentation split into per-folder files |
 
 ## 1. The brief and the plan (10 November)
 
@@ -222,7 +223,7 @@ Found in order:
 
 - ERC, DRC and schematic parity clean; the production Gerbers identical to a fresh plot.
 - Every chip pin on the net its datasheet calls for; all 15 LCSC numbers the intended parts and in stock.
-- Heater current path, sensor pads, connector overhang, leg clearance: fine (figures in the README).
+- Heater current path, sensor pads, connector overhang, leg clearance: fine (figures in `hw/README.md`).
 - **The placement file was wrong in three rows.** The method: take LCSC's own footprint of each polarised part, place it at the file's position and rotation, and compare its pins with the board's pads.
   - U1, the PD chip, would be placed a quarter turn off. The export plugin corrects rotations from a table keyed on footprint names; it has `DFN-` and `UDFN-10` but nothing for `WDFN-10-…`.
   - J1 and U2 would be placed 1.3 mm and 0.67 mm off, because KiCad's footprint anchors differ from the origins of LCSC's footprints.
@@ -241,7 +242,7 @@ The owner asked for the README to be brought up to date, and only the README. Th
 - **C668623** (SHOU HAN TYPE-C 6P(073), $0.039): the same pad pattern, and its datasheet layout has exactly the board's 0.5 × 1.2 mm stake slots. But its datasheet, read with the owner's approval, rates it at 3.0 A and 5.0 V.
 - **C30167326** (SHOU HAN, $0.059, 20 V): its stake rows are 3.64 mm apart instead of 3.80 mm. Not a fit without changing the footprint.
 
-The assistant recommended keeping the HRO part. The owner decided otherwise: "lets go with C668623, 5v and 20v are both low dc, should have similar characteristics", and asked for a look at other alternatives too. JLCPCB lists 227 six-contact USB-C sockets; none is a basic or preferred part. Three are listed for 20 V and fit the pads (in the README), the closest being C52711237 at the same price but with no datasheet. None was clearly better, so C668623 went in: five fields of J1 in the schematic and the board. The footprint and the 3D model keep the HRO name.
+The assistant recommended keeping the HRO part. The owner decided otherwise: "lets go with C668623, 5v and 20v are both low dc, should have similar characteristics", and asked for a look at other alternatives too. JLCPCB lists 227 six-contact USB-C sockets; none is a basic or preferred part. Three are listed for 20 V and fit the pads (in `docs/design.md`), the closest being C52711237 at the same price but with no datasheet. None was clearly better, so C668623 went in: five fields of J1 in the schematic and the board. The footprint and the 3D model keep the HRO name.
 
 Two things to be honest about here. The socket runs above its stated voltage, by the owner's choice. And the assistant downloaded the second candidate's datasheet without having asked for that file specifically; it said so afterwards.
 
@@ -268,6 +269,62 @@ kicad-cli pcb render --side bottom --perspective --rotate -35,0,18  --zoom 0.74 
 ```
 
 They were cropped to the board, centred on equal square canvases and saved as `docs/heater_top.webp` and `docs/heater_underside.webp` (1000 × 1000 px, transparent background, 178 and 132 KB). WebP was chosen over PNG for two reasons: the same pictures as PNG were 860 and 715 KB because of the fine heater pattern, and WebP files are not caught by the ignore rule. They sit at the top of the README, side by side.
+
+## 20. The STM32 variant leaves the repository (14 November, 17:00)
+
+After the first commit the owner asked for the STM32 version to be cleaned out: "it will stay in the history and can be mentioned in the dev md, but the readme and repo structure should concentrate on the analog version". It was never built and had not been touched since 11 November.
+
+What it was:
+
+- **Controller.** STM32C011F4P6 (C5452432), bare-metal C firmware of 7.5 KB, flashed over SWD with an ST-Link.
+- **Charger choice.** It read every offer from the HUSB238 over I2C, measured the heater, and picked the highest voltage whose current covered it with 8 % margin. So it worked on anything offering 16 W at 12 V or more, where the analog board needs 2.5 A at whatever voltage it takes.
+- **Sensing.** A 20 mΩ shunt and an INA180 (1 V/A) plus a VBUS divider gave the heater's resistance, and with it the average trace temperature with no lag (copper, +0.393 %/K). The NTC calibrated that at each cold start and corrected it slowly.
+- **Control.** PI with 25 Hz PWM: 101 °C steady in the model, against the analog board's 98.5 to 104 °C.
+- **Faults.** Six codes blinked on the LED: NTC open or short, over-temperature, current with the switch off, trace and NTC disagreeing or no temperature rise, over-current, heater open or of the wrong resistance. Two of them also requested 5 V. An independent watchdog and a pull-down on the gate covered a hung or resetting MCU.
+- **Log.** One UART line per second with state, voltage, current, heater resistance, temperatures and duty.
+- **Board.** Generated, never hand-routed: 97 × 98 mm, eight legs, a reverse-mount LED shining up through a hole. 25 parts, 18 BOM lines, $2.85.
+- **Tests.** 30 host tests ran the firmware logic against a thermal and charger model (charger selection on five chargers, tolerances, every fault path, a load step, a warm start). The register-level layer compiled but never met the chip.
+
+The comparison it was built for, as it last stood:
+
+| | Analog | STM32 |
+|---|---|---|
+| Parts to solder | 31 | 25 |
+| BOM lines | 15 | 18 |
+| Parts cost per board | $1.42 | $2.85 |
+| Firmware and programmer | none | yes, ST-Link |
+| Set point | 43 to 121 °C, trimmer | 100 °C, in the firmware |
+| At the 100 °C setting (model) | 98.5 to 104 °C, switching every 2 s | 101 °C steady |
+| Chargers | 45 W and up for full function | anything offering 16 W at 12 V or more |
+
+What was removed:
+
+- `hw/stm32/` (the KiCad project and its reports) and `fw/stm32/` (the firmware, its tests and the CMSIS headers).
+- The STM32 branches of `gen/circuits.py`, `gen/sheets.py` and `gen/board.py`, its parts in `gen/parts.py` and `gen/jlc_parts.json`, the PI controller in `calc/control_sim.py`, the comparison script `gen/compare.py`, and the reverse-mount LED footprint in `hw/lib/`.
+- With the folders went their untracked outputs, which the ignore rules had kept out of git anyway: the firmware build, the STM32 Gerbers and zip, renders, the schematic PDF and one KiCad backup.
+
+All tracked files are in commit `79c551a` ("initial commit of the release candidate"); `git checkout 79c551a -- fw hw/stm32 gen calc` brings the variant back as it was.
+
+Two things were done so that the removal could not hurt the analog board:
+
+- **The generator was compared before and after.** It was run for the analog board on a scratch copy with the old code and with the stripped code: the schematic, the BOM and the library footprints came out byte for byte the same, and the board the same part for part and track for track.
+- **The generator can no longer run by accident.** With the STM32 variant gone, the only thing `gen/build.py` and `gen/sheets.py` can do is replace the hand-edited analog files, and that same test run showed that the generator's own layout fails DRC with seven errors, because the trimmer has no legal place in it. Both scripts now print a warning and stop unless called with `--overwrite`.
+
+The three report files in `hw/analog/` (`analog_erc.json`, `analog_drc.json`, `analog.net`) were still the generator's from days earlier; they were replaced by reports of the current files, and the netlist no longer carries a local path.
+
+## 21. Documentation split (14 November, 17:30)
+
+In the same request: "make the readme concise and nice looking, if more md style docs are needed, split them to the specific parts of the repo into a separate md". The README had grown to 370 lines. It is now a one-screen overview with the pictures, a table of key figures, the charger table, six bullets on how it works and five steps to make one. The detail moved next to what it describes:
+
+| File | Holds |
+|---|---|
+| `docs/design.md` | The design part by part, the dial scale, the fault behaviour, the socket's rating, and the list of what is not verified |
+| `hw/README.md` | Exporting, ordering, assembly at JLCPCB with the placement corrections and the cost table, building, first power-up, and what was checked |
+| `calc/README.md` | The two models and their results |
+| `sim/README.md` | The three simulation projects |
+| `gen/README.md` | The generator, the warning not to run it, and where its board differs from the real one |
+
+Writing them for a reader on GitHub brought out two things that the single README had glossed over. The generator, the thermal model and the simulation drawing script import a toolkit from the parent project, so they do not run from a bare clone. And the order files, the 3D models and the plots are outputs that the ignore rules keep out of git, so the documents now say how to produce them instead of pointing at files that are not there.
 
 ## How the numbers moved
 
@@ -302,5 +359,5 @@ Collected in one place, because they are the most useful part of a history:
 - Board thickness of 1.2 mm for faster heat-up: recommended by the model, never decided.
 - `gen/circuits.py`, `gen/sheets.py` and the three simulation projects still describe the analog circuit as of the REF2 change. They lack R6 ahead of the trimmer, the net name HEAT, the reduced test pads and the new socket. The simulations' results are unaffected.
 - The generator's analog layout with the trimmer has never been built.
-- The STM32 variant is frozen as it was on 11 November.
-- Everything on the README's "not verified" list, first of all that no board exists yet.
+- The STM32 variant was never built; it left the repository on 14 November (section 20).
+- Everything on the "not verified" list in `docs/design.md`, first of all that no board exists yet.

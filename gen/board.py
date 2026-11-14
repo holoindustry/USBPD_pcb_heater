@@ -1,4 +1,4 @@
-"""Build one heater board variant: library parts, schematic, PCB, checks, fabrication files.
+"""Build the heater board: library parts, schematic, PCB, checks, fabrication files.
 
 Order of work on the PCB (as in ../gen/boards/poc.py): place the circuit, draw the fixed
 copper by hand (heater zone, links, power paths), let the grid router do the tail signals,
@@ -115,19 +115,6 @@ def tooling_fp():
     K.fp_save(fp)
 
 
-def led_fp():
-    """KiCad's 1206 reverse-mount LED footprint with the pads moved 0.13 mm outwards, so the
-    pads keep 0.33 mm from the light hole."""
-    fp = P.FootprintLoad("/usr/share/kicad/footprints/LED_SMD.pretty", "LED_1206_3216Metric_ReverseMount_Hole1.8x2.4mm")
-    fp.SetFPIDAsString("fable:LED_1206_ReverseMount")
-    for pad in fp.Pads():
-        if pad.GetNumber() in ("1", "2"):
-            sgn = -1 if pad.GetPosition().x < 0 else 1
-            pad.SetPosition(P.VECTOR2I(P.FromMM(sgn * 1.68), 0))
-            pad.SetSize(P.VECTOR2I(P.FromMM(0.9), P.FromMM(1.75)))
-    K.fp_save(fp)
-
-
 def pot_fp():
     """3362P single-turn trimmer (Bourns 3362 datasheet, style P; the BOCHEN 3362P-1 is a copy).
     Seen from the adjustment side: pin 1 (anticlockwise end) at the origin, pin 3 (clockwise end)
@@ -169,7 +156,6 @@ def library(h):
     leg_fp()
     bite_fp()
     tooling_fp()
-    led_fp()
     pot_fp()
 
 
@@ -349,29 +335,18 @@ def place(c, out, symlib, variant):
     K.orient(bd, "C1", lambda: abs(y_of("C1", "1") - y_of("C1", "2")) < 0.01 and x_of("C1", "1") < x_of("C1", "2"))
     K.orient(bd, "R1", lambda: abs(y_of("R1", "1") - y_of("R1", "2")) < 0.01 and x_of("R1", "1") < x_of("R1", "2"))
     horiz = lambda ref: abs(y_of(ref, "1") - y_of(ref, "2")) < 0.01 and x_of(ref, "1") < x_of(ref, "2")
-    if variant == "analog":
-        K.orient(bd, "R15", lambda: abs(x_of("R15", "1") - x_of("R15", "2")) < 0.01 and y_of("R15", "1") < y_of("R15", "2"))
-        K.move_fp(bd, "R15", x_of("U1", "8") - x_of("R15", "1"), 0.0)
-        K.orient(bd, "R16", lambda: horiz("R16"))            # ISET pad on the left, like R1
-        K.orient(bd, "D1", lambda: abs(y_of("D1", "1") - y_of("D1", "2")) < 0.01 and x_of("D1", "2") < x_of("D1", "1"))
-        for ref in ("U3", "U4"):                             # pins 1-4 along the upper row, pin 1 on the left
-            K.orient(bd, ref, lambda: y_of(ref, "1") > y_of(ref, "8") + 1.0 and x_of(ref, "1") < x_of(ref, "4") - 1.0)
+    K.orient(bd, "R15", lambda: abs(x_of("R15", "1") - x_of("R15", "2")) < 0.01 and y_of("R15", "1") < y_of("R15", "2"))
+    K.move_fp(bd, "R15", x_of("U1", "8") - x_of("R15", "1"), 0.0)
+    K.orient(bd, "R16", lambda: horiz("R16"))            # ISET pad on the left, like R1
+    K.orient(bd, "D1", lambda: abs(y_of("D1", "1") - y_of("D1", "2")) < 0.01 and x_of("D1", "2") < x_of("D1", "1"))
+    for ref in ("U3", "U4"):                             # pins 1-4 along the upper row, pin 1 on the left
+        K.orient(bd, ref, lambda: y_of(ref, "1") > y_of(ref, "8") + 1.0 and x_of(ref, "1") < x_of(ref, "4") - 1.0)
     # switch: drain up (towards the link), on the power trace
     K.orient(bd, "Q1", lambda: y_of("Q1", "3") > y_of("Q1", "1") + 0.5 and abs(y_of("Q1", "1") - y_of("Q1", "2")) < 0.01)
     K.move_fp(bd, "Q1", X_PWR - x_of("Q1", "3"), 0.0)
     fixed = {"HTR1", "RT1", "RT2", "J1", "U1", "C1", "R1", "R15", "Q1", "D1", "U2", "U3"}
     fixed |= {p.ref for p in c.parts if p.ref.startswith("TP")}
-    if variant == "analog":
-        fixed |= {"R16", "U4"}
-    if variant == "stm32":
-        # shunt straight below the source pad; the amplifier sits to its left
-        K.orient(bd, "R8", lambda: abs(x_of("R8", "1") - x_of("R8", "2")) < 0.01 and y_of("R8", "1") > y_of("R8", "2"))
-        K.move_fp(bd, "R8", x_of("Q1", "2") - x_of("R8", "1"), 0.0)
-        K.orient(bd, "U4", lambda: abs(x_of("U4", "3") - x_of("U4", "4")) < 0.01 and y_of("U4", "3") > y_of("U4", "4")
-                 and x_of("U4", "3") > x_of("U4", "2") + 0.5)        # inputs face the shunt on its right, IN+ on top
-        fixed |= {"R8", "U4"}
-        # MCU: pins 11-20 (I2C, PWM, SWD) face the middle of the board, pin 1 at the bottom left
-        K.orient(bd, "U3", lambda: x_of("U3", "1") < x_of("U3", "20") - 1.0 and y_of("U3", "1") < y_of("U3", "10"))
+    fixed |= {"R16", "U4"}
     rects, _, _ = power_plan(bd, variant)
     keep = [(*r, "B") for r in rects]
     keep += [(*G.slot_rect(cx, cy, o, grow=0.4), "FB") for cx, cy, o in G.LEG_SLOTS if cy < G.Y_TAIL]
@@ -425,24 +400,13 @@ def power_plan(bd, variant):
     # configuration pins straight to their resistors
     p9, r1 = K.padxy(bd, "U1", "9"), K.padxy(bd, "R1", "1")
     paths.append(("ISET", [p9, (p9[0], p9[1] + 0.8), (r1[0] - 0.3, r1[1]), r1], 0.2, B))
-    if variant == "analog":
-        paths.append(("VSET", [K.padxy(bd, "U1", "8"), K.padxy(bd, "R15", "1")], 0.2, B))
-        paths.append(("ISET", [r1, K.padxy(bd, "R16", "1")], 0.2, B))
-    # heater return: via group -> drain, source -> (shunt ->) connector ground
+    paths.append(("VSET", [K.padxy(bd, "U1", "8"), K.padxy(bd, "R15", "1")], 0.2, B))
+    paths.append(("ISET", [r1, K.padxy(bd, "R16", "1")], 0.2, B))
+    # heater return: via group -> drain, source -> connector ground
     paths.append(("HTR_N", [(X_PWR, Y_VIAS), K.padxy(bd, "Q1", "3")], 1.2, B))
     s = K.padxy(bd, "Q1", "2")
-    if variant == "stm32":
-        r1p, r2p = K.padxy(bd, "R8", "1"), K.padxy(bd, "R8", "2")
-        paths.append(("SH_P", [s, r1p], 1.0, B))
-        paths.append(("GND", [r2p, (r2p[0], y_bus)], 1.2, B))
-        x_ret = r2p[0]
-        ip, im = K.padxy(bd, "U4", "3"), K.padxy(bd, "U4", "4")      # Kelvin connections to the shunt
-        hop = -1.25 if ip[0] < r1p[0] else 1.25
-        paths.append(("SH_P", [ip, (r1p[0] + hop, ip[1]), (r1p[0] + hop, r1p[1]), r1p], 0.2, B))
-        paths.append(("GND", [im, (r2p[0] + hop, im[1]), (r2p[0] + hop, r2p[1]), r2p], 0.2, B))
-    else:
-        paths.append(("GND", [s, (s[0], y_bus)], 1.2, B))
-        x_ret = s[0]
+    paths.append(("GND", [s, (s[0], y_bus)], 1.2, B))
+    x_ret = s[0]
     paths.append(("GND", [(x_ret, y_bus), (gn[1][0], y_bus)], 0.8, B))
     paths.append(("GND", [(gn[1][0], y_bus), gn[1]], 0.8, B))
     rects = []
@@ -536,9 +500,8 @@ def gnd_vias(r, bd, skip=()):
     return done, missing
 
 
-WIDTH = {"VBUS": 0.5, "HTR_N": 0.5, "SH_P": 0.5, "+3V3": 0.3, "GATE": 0.25, "GATE_OC": 0.25, "GATE_DRV": 0.25}
-FIRST = ["CC1", "CC2", "ISET", "VSET", "I2C_IDLE", "SDA", "SCL", "ISENSE", "NTC1", "NTC2", "REF1", "REF2",
-         "VBUS", "HTR_N", "SH_P", "+3V3"]
+WIDTH = {"VBUS": 0.5, "HTR_N": 0.5, "+3V3": 0.3, "GATE": 0.25, "GATE_OC": 0.25}
+FIRST = ["CC1", "CC2", "ISET", "VSET", "I2C_IDLE", "NTC1", "NTC2", "REF1", "REF2", "VBUS", "HTR_N", "+3V3"]
 
 
 def route(bd, c, variant):
@@ -550,8 +513,7 @@ def route(bd, c, variant):
             for layer in r.layers:
                 r.owner[layer][i0_:i1_, j0_:j1_][m] = -1
     results = {}
-    skip = {("U4", "4"), ("R8", "2")} if variant == "stm32" else set()
-    done, missing = gnd_vias(r, bd, skip)
+    done, missing = gnd_vias(r, bd)
     results["GND vias"] = f"{done} placed" + (f", no room at {missing}" if missing else "")
     pos = {}
     for fp in bd.b.Footprints():
@@ -592,11 +554,6 @@ def pours(bd, r, variant):
     holes = [K.ps_rect(*rc) for rc in npth_rects(bd, 0.45)]
     top = K.ps_sub(K.ps_poly(tail_region(0.35)), *holes)
     bot = K.ps_sub(K.ps_poly(tail_region(0.35)), *holes)
-    if variant == "stm32":                                # keep the pour off the amplifier's Kelvin inputs
-        ip, im = K.padbox(bd, "U4", "3"), K.padbox(bd, "U4", "4")
-        r1, r2 = K.padbox(bd, "R8", "1"), K.padbox(bd, "R8", "2")
-        x_a, x_b = (min(ip[0], im[0]) - 0.4, r2[0] - 0.15) if ip[0] < r2[0] else (r2[2] + 0.15, max(ip[2], im[2]) + 0.4)
-        bot = K.ps_sub(bot, K.ps_rect(x_a, min(im[1], r2[1]) - 0.4, x_b, max(ip[3], r1[3]) + 0.4))
     K.zone(bd, top, P.F_Cu, "GND", clearance=0.25, priority=0, thermal=True, name="tail_gnd_top")
     K.zone(bd, bot, P.B_Cu, "GND", clearance=0.25, priority=0, thermal=True, name="tail_gnd_bottom")
     taken = via_points(bd)
@@ -612,7 +569,7 @@ def silk(bd, variant, h):
     T(bd, f"HOT SURFACE   up to 20 V   R20 {h.r20:.1f} ohm", (0.0, G.Y_TAIL - 9.0), P.F_SilkS, 1.0)
     T(bd, "parts and legs on the other side", (0.0, G.Y_TAIL - 11.0), P.F_SilkS, 0.8)
     T(bd, "JLCJLCJLCJLC", (-25.0, G.Y_TAIL - 1.3), P.B_SilkS, 0.8)
-    short = {"+3V3": "3V3", "SWDIO": "DIO", "SWCLK": "CLK", "NRST": "RST", "HTR_N": "HTR-"}
+    short = {"+3V3": "3V3", "HTR_N": "HTR-"}
     for fp in bd.b.Footprints():
         if fp.GetReference().startswith("TP"):
             x, y = K.padxy(bd, fp.GetReference(), "1")

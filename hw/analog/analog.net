@@ -1,9 +1,9 @@
 (export
 	(version "E")
 	(design
-		(source "/home/cseka/Documents/pcb_heater/poc_fable/hw/analog/analog.kicad_sch")
-		(date "2026-11-14T02:57:11")
-		(tool "Eeschema 10.0.7-10.0.7~ubuntu26.04.1")
+		(source "analog.kicad_sch")
+		(date "2026-11-14T16:59:08")
+		(tool "Eeschema 10.0.8-10.0.8~ubuntu26.04.1")
 		(sheet
 			(number "1")
 			(name "/")
@@ -760,19 +760,19 @@
 		)
 		(comp
 			(ref "J1")
-			(value "TYPE-C-31-M-17")
+			(value "TYPE-C 6P(073)")
 			(footprint "Connector_USB:USB_C_Receptacle_HRO_TYPE-C-31-M-17")
 			(fields
 				(field
-					(name "MPN") "TYPE-C-31-M-17")
+					(name "MPN") "TYPE-C 6P(073)")
 				(field
-					(name "LCSC") "C283540")
+					(name "LCSC") "C668623")
 				(field
-					(name "Price") "0.199")
+					(name "Price") "0.039")
 				(field
 					(name "PriceSrc") "jlc")
 				(field
-					(name "Note") "HRO 6-pin power-only USB-C receptacle, 5 A")
+					(name "Note") "SHOU HAN 6-pin power-only USB-C receptacle, rated 3 A / 5 V, used at 20 V by choice")
 				(field
 					(name "Footprint") "Connector_USB:USB_C_Receptacle_HRO_TYPE-C-31-M-17")
 				(field
@@ -789,15 +789,15 @@
 			)
 			(property
 				(name "MPN")
-				(value "TYPE-C-31-M-17")
+				(value "TYPE-C 6P(073)")
 			)
 			(property
 				(name "LCSC")
-				(value "C283540")
+				(value "C668623")
 			)
 			(property
 				(name "Price")
-				(value "0.199")
+				(value "0.039")
 			)
 			(property
 				(name "PriceSrc")
@@ -805,7 +805,7 @@
 			)
 			(property
 				(name "Note")
-				(value "HRO 6-pin power-only USB-C receptacle, 5 A")
+				(value "SHOU HAN 6-pin power-only USB-C receptacle, rated 3 A / 5 V, used at 20 V by choice")
 			)
 			(property
 				(name "Sheetname")
@@ -2682,120 +2682,6 @@
 			)
 		)
 		(comp
-			(ref "TP4")
-			(value "GATE")
-			(footprint "TestPoint:TestPoint_Pad_D1.5mm")
-			(fields
-				(field
-					(name "Footprint") "TestPoint:TestPoint_Pad_D1.5mm")
-				(field
-					(name "Datasheet")
-				)
-				(field
-					(name "Description")
-				)
-			)
-			(libsource
-				(lib "Connector")
-				(part "TestPoint")
-				(description "test point")
-			)
-			(property
-				(name "Sheetname")
-				(value "analog")
-			)
-			(property
-				(name "Sheetfile")
-				(value "analog.kicad_sch")
-			)
-			(property
-				(name "exclude_from_bom")
-			)
-			(property
-				(name "exclude_from_pos_files")
-			)
-			(property
-				(name "ki_keywords")
-				(value "test point tp")
-			)
-			(property
-				(name "ki_fp_filters")
-				(value "Pin* Test*")
-			)
-			(sheetpath
-				(names "/")
-				(tstamps "/")
-			)
-			(tstamps "a9bd4823-8218-5c88-bbf8-2b2826434eac")
-			(units
-				(unit
-					(name "A")
-					(pins
-						(pin
-							(num "1")
-						)
-					)
-				)
-			)
-		)
-		(comp
-			(ref "TP5")
-			(value "HTR_N")
-			(footprint "TestPoint:TestPoint_Pad_D1.5mm")
-			(fields
-				(field
-					(name "Footprint") "TestPoint:TestPoint_Pad_D1.5mm")
-				(field
-					(name "Datasheet")
-				)
-				(field
-					(name "Description")
-				)
-			)
-			(libsource
-				(lib "Connector")
-				(part "TestPoint")
-				(description "test point")
-			)
-			(property
-				(name "Sheetname")
-				(value "analog")
-			)
-			(property
-				(name "Sheetfile")
-				(value "analog.kicad_sch")
-			)
-			(property
-				(name "exclude_from_bom")
-			)
-			(property
-				(name "exclude_from_pos_files")
-			)
-			(property
-				(name "ki_keywords")
-				(value "test point tp")
-			)
-			(property
-				(name "ki_fp_filters")
-				(value "Pin* Test*")
-			)
-			(sheetpath
-				(names "/")
-				(tstamps "/")
-			)
-			(tstamps "8e01019e-7ead-598c-ace3-3f1834a3b455")
-			(units
-				(unit
-					(name "A")
-					(pins
-						(pin
-							(num "1")
-						)
-					)
-				)
-			)
-		)
-		(comp
 			(ref "U1")
 			(value "HUSB238_002DD")
 			(footprint "Package_DFN_QFN:WDFN-10-1EP_3x3mm_P0.5mm_EP1.8x2.5mm")
@@ -3062,7 +2948,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "dbebd1a3-c6af-5dd9-b7b6-391f2520fdfd" "3bddf40f-e671-5265-b880-f7cff4971633"
+			(tstamps "3bddf40f-e671-5265-b880-f7cff4971633" "dbebd1a3-c6af-5dd9-b7b6-391f2520fdfd"
 				"2b5863f1-295f-54e8-8d0c-68d64d25250b"
 			)
 			(units
@@ -3826,14 +3712,13 @@
 				(pintype "passive")
 			)
 			(node
-				(ref "R8")
+				(ref "R6")
 				(pin "1")
 				(pintype "passive")
 			)
 			(node
-				(ref "RV1")
+				(ref "R8")
 				(pin "1")
-				(pinfunction "1_1")
 				(pintype "passive")
 			)
 			(node
@@ -3876,12 +3761,6 @@
 				(pin "2")
 				(pintype "passive")
 			)
-			(node
-				(ref "TP4")
-				(pin "1")
-				(pinfunction "1_1")
-				(pintype "passive")
-			)
 		)
 		(net
 			(code "3")
@@ -3915,7 +3794,7 @@
 		)
 		(net
 			(code "4")
-			(name "/HTR_N")
+			(name "/HEAT")
 			(class "Default")
 			(node
 				(ref "HTR1")
@@ -3931,12 +3810,6 @@
 			(node
 				(ref "R4")
 				(pin "2")
-				(pintype "passive")
-			)
-			(node
-				(ref "TP5")
-				(pin "1")
-				(pinfunction "1_1")
 				(pintype "passive")
 			)
 		)
@@ -4039,13 +3912,20 @@
 			(name "/REF1")
 			(class "Default")
 			(node
-				(ref "R6")
-				(pin "2")
+				(ref "R7")
+				(pin "1")
 				(pintype "passive")
 			)
 			(node
-				(ref "R7")
-				(pin "1")
+				(ref "RV1")
+				(pin "2")
+				(pinfunction "2_2")
+				(pintype "passive")
+			)
+			(node
+				(ref "RV1")
+				(pin "3")
+				(pinfunction "3_3")
 				(pintype "passive")
 			)
 			(node
@@ -4290,23 +4170,17 @@
 		)
 		(net
 			(code "15")
-			(name "Net-(R6-Pad1)")
+			(name "Net-(R6-Pad2)")
 			(class "Default")
 			(node
 				(ref "R6")
-				(pin "1")
-				(pintype "passive")
-			)
-			(node
-				(ref "RV1")
 				(pin "2")
-				(pinfunction "2_2")
 				(pintype "passive")
 			)
 			(node
 				(ref "RV1")
-				(pin "3")
-				(pinfunction "3_3")
+				(pin "1")
+				(pinfunction "1_1")
 				(pintype "passive")
 			)
 		)

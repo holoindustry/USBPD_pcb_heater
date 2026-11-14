@@ -1,11 +1,9 @@
 #!/usr/bin/env python3
 """Control simulation on the 1-D plant model of calc/thermal.py.
 
-Analog variant: the thermostat and limiter thresholds are computed from the actual resistor
-values (NTC pull-up, reference divider with the set-point pot, hysteresis resistor), then
-simulated as on/off control.
-STM32 variant: PI control with ideal PWM, on the NTC alone and on the heater-resistance
-reading corrected slowly by the NTC.
+The thermostat and limiter thresholds are computed from the actual resistor values (NTC
+pull-up, reference divider with the set-point pot, hysteresis resistor), then simulated as
+on/off control.
 
 analog_design() is also imported by gen/circuits.py, so the schematic uses the same values.
 
@@ -29,7 +27,7 @@ T_SET = 100.0
 R_PULL = 22e3           # pull-up on the comparator output nodes (R12, R13)
 V_OL = 0.1              # comparator output low level
 
-# The fitted resistors of the analog variant are JLCPCB basic parts (3.3k, 4.7k, 22k, 68k)
+# The fitted resistors are JLCPCB basic parts (3.3k, 4.7k, 22k, 68k)
 # and one 3M, a "preferred" extended part that carries no fee.
 #                    NTC pull-up, reference top, reference bottom, feedback to the NTC node
 THERMOSTAT = (68e3, 4.7e3, 3.3e3, 3e6)    # R3, R6, R7, R10; the pot RV1 is in series with R6
@@ -134,29 +132,6 @@ def sim_analog(h, d, volts=20.0, t_end=300.0, load_at=None, load_h=30.0, fet_sho
     return log
 
 
-def sim_pi(h, volts=20.0, t_end=300.0, load_at=None, load_h=30.0, use_r=True, kp=0.25, ki=0.012):
-    pl = TH.Plant(h.r20)
-    integ, offs = 0.0, 0.0
-    log, t = [], 0.0
-    while t < t_end:
-        if load_at is not None and t >= load_at:
-            pl.h_extra_top = load_h
-        if use_r:                                   # trace temperature, pulled slowly towards the NTC
-            est = pl.t_top + offs
-            offs += (pl.t_sensor - est) / 20.0 * TH.DT
-        else:
-            est = pl.t_sensor
-        e = T_SET - est
-        u = kp * e + integ
-        duty = min(1.0, max(0.0, u))
-        if 0.0 < u < 1.0 or (u >= 1.0 and e < 0) or (u <= 0.0 and e > 0):
-            integ += ki * e * TH.DT
-        pl.step(duty * volts ** 2 / pl.r_heater(), TH.DT)
-        t += TH.DT
-        log.append((t, pl.t_top, pl.t_bottom, pl.t_sensor, duty, volts))
-    return log
-
-
 def stats(log, t_from, t_to):
     seg = [r for r in log if t_from <= r[0] <= t_to]
     top = [r[1] for r in seg]
@@ -169,7 +144,7 @@ def main():
     h = H.design()
     d = analog_design()
     f = P.fmt_r
-    print("Analog variant (NTC 100 k B3950; 3.3k, 4.7k, 22k, 68k, 3M and a 50k pot):")
+    print("Thermostat and limiter (NTC 100 k B3950; 3.3k, 4.7k, 22k, 68k, 3M and a 50k pot):")
     print(f"  thermostat: NTC pull-up {f(d['r_pu1'])}, reference ({f(d['r_top1'])} + pot {f(d['r_pot'])}) / {f(d['r_set'])}, "
           f"feedback {f(d['r_h1'])} -> {d['t_min']:.1f} .. {d['t_max']:.1f} C")
     print("  pot travel   off      on     REF1")
@@ -189,9 +164,6 @@ def main():
         ("analog 12 V", sim_analog(h, d, volts=12.0, t_end=420.0)),
         ("analog 20 V, switch shorted", sim_analog(h, d, fet_short=True)),
         ("analog 20 V, RT1 open", sim_analog(h, d, rt1_open=True)),
-        ("STM32 PI on NTC, 20 V", sim_pi(h, use_r=False, load_at=150.0)),
-        ("STM32 PI on trace R + NTC, 20 V", sim_pi(h, use_r=True, load_at=150.0)),
-        ("STM32 PI on trace R + NTC, 12 V", sim_pi(h, volts=12.0, t_end=420.0)),
         (f"analog 20 V, pot at maximum ({d_max['t_off']:.0f} C)", sim_analog(h, d_max, t_end=420.0)),
         (f"analog 15 V, pot at maximum ({d_max['t_off']:.0f} C)", sim_analog(h, d_max, volts=15.0, t_end=420.0)),
         (f"analog 20 V, pot at minimum ({d_min['t_off']:.0f} C)", sim_analog(h, d_min, t_end=420.0)),
@@ -220,7 +192,7 @@ def main():
     except ImportError:
         return
     fig, axs = plt.subplots(2, 2, figsize=(12, 7), dpi=110, sharey=False)
-    for ax, k in zip(axs.ravel(), (0, 5, 2, 1)):
+    for ax, k in zip(axs.ravel(), (0, 4, 2, 1)):
         name, log = runs[k]
         ts = [r[0] for r in log[::25]]
         ax.plot(ts, [r[1] for r in log[::25]], label="top copper", lw=1.0)

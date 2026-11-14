@@ -1,11 +1,16 @@
 #!/usr/bin/env python3
-"""Regenerate the heater boards.
+"""Regenerate the heater board from gen/circuits.py.
 
-    python3 gen/build.py            both variants
-    python3 gen/build.py analog     one variant (analog | stm32)
+    python3 gen/build.py --overwrite
 
-Writes hw/lib (project library) and hw/<variant>/: KiCad project, ERC/DRC reports, Gerber
+Writes hw/lib (project library) and hw/analog/: KiCad project, ERC/DRC reports, Gerber
 zip, BOM, position file, schematic PDF, renders, layout.png. Exits non-zero if a check fails.
+
+DO NOT RUN THIS ON THE REAL PROJECT. hw/analog/ is edited by hand since 2026-11-11: the board
+there is routed by hand and its schematic has parts and changes the generator does not know.
+The generator's own layout of the present circuit has never been made to pass DRC (the
+trimmer has no legal place in it). The script therefore does nothing without --overwrite; it
+is kept as the record of how the board was first made, and for work on a copy.
 """
 import os
 import sys
@@ -49,9 +54,11 @@ def check(res):
 
 
 def main(argv):
-    variants = [a for a in argv if a in ("analog", "stm32")] or ["analog", "stm32"]
+    if "--overwrite" not in argv:
+        print(__doc__)
+        return 2
     bad = 0
-    for v in variants:
+    for v in ("analog",):
         res = board.build(v, cam="--no-cam" not in argv)
         problems = check(res)
         n_parts = sum(len(r[-1]) for r in res["bom"])

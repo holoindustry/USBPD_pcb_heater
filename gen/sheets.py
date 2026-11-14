@@ -1,10 +1,12 @@
 #!/usr/bin/env python3
-"""How the two circuits are drawn: symbol positions, wires, labels and notes.
+"""How the circuit is drawn: symbol positions, wires, labels and notes.
 
-    python3 gen/sheets.py            write and check both schematics (hw/<variant>/<variant>.kicad_sch)
-    python3 gen/sheets.py analog     one of them
+    python3 gen/sheets.py --overwrite      write and check hw/analog/analog.kicad_sch
 
-Each function draws one circuit of gen/circuits.py, one functional group after the other.
+The schematic in hw/analog/ is edited by hand since 2026-11-11 and this script would replace
+it, so it does nothing without --overwrite.
+
+analog() draws the circuit of gen/circuits.py, one functional group after the other.
 Coordinates are grid steps of 1.27 mm on an A3 sheet, x to the right, y down; a point is
 'REF.PIN' or (x, y) (see Sheet.pt in gen/schematic.py). gen/schematic.py refuses to write a
 drawing whose wires do not give exactly the nets of the circuit.
@@ -32,7 +34,7 @@ def gnd(s, *pins):
 
 
 def input_and_pd(s, variant):
-    """USB-C socket and PD sink controller, common to both variants (sheet x 12..114, y 14..77)."""
+    """USB-C socket and PD sink controller (sheet x 12..114, y 14..77)."""
     s.box(12, 14, 114, 77, "USB-C input and PD sink")
     s.sym("J1", 28, 42)
     s.sym("U1", 72, 48)
@@ -50,9 +52,9 @@ def input_and_pd(s, variant):
     gnd(s, (28, 60), "C1.2", "U1.GND")
 
 
-def rail(s, x, y, tp_out, tp_gnd=None):
+def rail(s, x, y, tp_out):
     """3.3 V regulator in a box whose top left corner is (x, y)."""
-    s.box(x, y, x + (76 if tp_gnd else 66), y + (38 if tp_gnd else 36), "3.3 V rail")
+    s.box(x, y, x + 66, y + 36, "3.3 V rail")
     s.sym("U2", x + 32, y + 20, ref_at=(0, -6.5, "c"))
     s.sym("C2", x + 16, y + 21)
     s.sym("C3", x + 48, y + 21)
@@ -61,14 +63,7 @@ def rail(s, x, y, tp_out, tp_gnd=None):
     s.wire("U2.VOUT", (x + 60, None))
     s.pwr("+3V3", (x + 60, y + 18))
     tp(s, tp_out, x + 54, y + 18)
-    if tp_gnd:                                           # ground pad at the end of a common ground wire
-        s.wire("C2.2", (None, y + 27), (x + 62, None))
-        s.wire("U2.GND", (None, y + 27))
-        s.wire("C3.2", (None, y + 27))
-        s.sym(tp_gnd, x + 62, y + 27, rot=270, val=False, ref_at=(4.8, 0, "l"))
-        gnd(s, (x + 32, y + 27))
-    else:
-        gnd(s, "C2.2", "U2.GND", "C3.2")
+    gnd(s, "C2.2", "U2.GND", "C3.2")
 
 
 # the two notes are also what gets written into the hand-edited hw/analog schematic
@@ -220,118 +215,7 @@ def analog(s):
            "D1 is lit while the heater is on.", x + 2, y + 13.5)
 
 
-def stm32(s):
-    # ---------------------------------------------------------------- USB-C input and PD sink
-    input_and_pd(s, "stm32")
-    s.sym("R9", 88, 39)
-    s.sym("R10", 96, 39)
-    s.pwr("+3V3", "R9.1")
-    s.pwr("+3V3", "R10.1")
-    s.wire("U1.SCL", (88, None), "R9.2")
-    s.wire("U1.SDA", (96, None), "R10.2")
-    s.label("SCL", (81, 46))                             # I2C is the one pair joined by name, not by wire
-    s.label("SDA", (81, 48))
-    s.sym("R1", 88, 60)
-    s.wire("U1.ISET", (88, None), "R1.1")
-    gnd(s, "R1.2")
-    s.text("U1 first takes the highest voltage that the charger offers with 2.5 A (ISET: 16.5k).\n"
-           "The MCU then reads the offers over I2C and picks the one that suits the measured heater;\n"
-           "PB7 low on VSET forces 5 V.", 14, 70.5)
-    rail(s, 12, 84, "TP7", "TP11")
-
-    # ---------------------------------------------------------------- microcontroller
-    s.box(126, 57, 218, 127, "Microcontroller")
-    s.sym("U3", 164, 96)
-    s.wire("U3.VDD", (None, 64))
-    s.pwr("+3V3", (164, 64))
-    s.sym("C5", 172, 69)
-    s.wire((164, 66), ("C5.1", None), "C5.1")
-    gnd(s, "C5.2", "U3.VSS")
-    s.wire("U3.PF2", (130, None))
-    s.sym("C6", 138, 87)
-    gnd(s, "C6.2")
-    tp(s, "TP10", 130, 84)
-    s.label("NRST", (141, 84))
-    s.wire("U3.PB6", (144, None))
-    tp(s, "TP6", 144, 94)
-    s.label("TX", (146, 94))
-    s.wire("U1.VSET", (124, None), (None, "U3.PB7"), "U3.PB7")
-    s.label("VSET", (129, 96))
-    for pin, net, ref in (("PA13", "SWDIO", "TP8"), ("PA14", "SWCLK", "TP9")):
-        x, y = s.wire(f"U3.{pin}", (188, None))[-1]
-        s.sym(ref, x, y, rot=270, val=False, ref_at=(4.8, 0, "l"))
-        s.label(net, (180, y))
-    for pin, net in (("PA9/PA11", "SCL"), ("PA10/PA12", "SDA")):
-        s.label(net, s.wire(f"U3.{pin}", (180, None))[-1])
-    s.sym("R4", 186, 94, rot=90)
-    s.sym("D1", 196, 94, rot=180)
-    s.wire("U3.PA5", "R4.1")
-    s.wire("R4.2", "D1.A")
-    s.wire("D1.K", (203, None))
-    gnd(s, (203, 94))
-    s.text("PA8: TIM1_CH1, 25 Hz PWM. PA11/PA12: bit-banged I2C to U1 (address 0x08). PB7: open drain, low = 5 V.\n"
-           "Pads in ST-Link order on the board: TP7 +3V3, TP8 SWDIO, TP9 SWCLK, TP10 NRST, TP11 GND. TP6: UART log.",
-           128, 120.5)
-
-    # ---------------------------------------------------------------- sensing: each divider is fed from below
-    s.box(188, 14, 286, 54, "Sensing (RT2, R11, C8: optional second sensor, not fitted)")
-    y = 38
-    for pin, net, x, top, bottom, cap in (("PA0", "NTC1", 192, "R3", "RT1", "C4"), ("PA2", "VSENSE", 228, "R5", "R6", None),
-                                          ("PA3", "NTC2", 250, "R11", "RT2", "C8")):
-        xc = x + (16 if cap else 8)                      # divider column
-        s.sym(top, xc, y - 6)
-        s.sym(bottom, xc, y + 6)
-        s.wire(f"{top}.2", f"{bottom}.1")
-        s.wire(f"U3.{pin}", (x, None), (None, y), (xc, None))
-        s.pwr("VBUS" if net == "VSENSE" else "+3V3", f"{top}.1")
-        gnd(s, f"{bottom}.2")
-        if cap:
-            s.sym(cap, x + 6, y + 6)
-            s.wire((x + 6, y), f"{cap}.1")
-            gnd(s, f"{cap}.2")
-        s.label(net, (180, s.pin(f"U3.{pin}")[1]))
-
-    # ---------------------------------------------------------------- heater, switch, current sense
-    s.box(262, 62, 316, 146, "Heater and current sense")
-    s.sym("R2", 272, 100, rot=90)
-    s.wire("U3.PA8", "R2.1")
-    s.label("GATE_DRV", (206, 100))
-    s.sym("Q1", 296, 100)
-    s.wire("R2.2", "Q1.G")
-    s.label("GATE", (276, 100))
-    s.sym("R7", 282, 105)
-    s.wire(("R7.1", 100), "R7.1")
-    gnd(s, "R7.2")
-    tp(s, "TP4", 288, 100)
-    s.sym("HTR1", 298, 82)
-    s.wire("HTR1.2", "Q1.D")
-    s.wire("HTR1.1", (None, 72))
-    s.pwr("VBUS", (298, 72))
-    s.wire((298, 90), (306, None))
-    tp(s, "TP5", 306, 90)
-    s.label("HTR_N", (299, 90))
-    s.sym("R8", 298, 112)
-    s.wire("Q1.S", "R8.1")
-    s.sym("U4", 274, 132, mirror="y", val_at=(-3, 3.4, "r"))     # inputs at the shunt, output towards the MCU
-    s.wire("U4.+", (290, None), (None, 106), (298, None))
-    s.wire("U4.-", ("R8.2", None), "R8.2")
-    s.wire((298, 134), (None, 136))
-    gnd(s, (298, 136), "U4.GND")
-    s.wire("U4.V+", (None, 114))
-    s.pwr("+3V3", (276, 114))
-    s.sym("C7", 266, 119)
-    s.wire((276, 116), ("C7.1", None))
-    gnd(s, "C7.2")
-    s.wire("U3.PA1", (222, None), (None, "U4.1"), "U4.1")
-    s.label("ISENSE", (180, s.pin("U3.PA1")[1]))
-    s.text("HTR1: top-side trace, 9.0 Ω at 20 °C.\n"
-           "R8, U4: heater current, 1 V per A;\n"
-           "with VBUS: the trace resistance,\n"
-           "hence its mean temperature.\n"
-           "R7 holds Q1 off during MCU reset.", 264, 67)
-
-
-LAYOUT = {"analog": analog, "stm32": stm32}
+LAYOUT = {"analog": analog}
 
 
 def draw(circuit, variant, lib):
@@ -341,6 +225,10 @@ def draw(circuit, variant, lib):
 
 
 def main(argv):
+    if "--overwrite" not in argv:
+        print("gen/sheets.py redraws hw/analog/analog.kicad_sch from gen/circuits.py. That schematic is edited\n"
+              "by hand and would be replaced. Nothing done; pass --overwrite if that is what you want.")
+        return 2
     lib = SC.Lib()
     bad = 0
     for v in [a for a in argv if a in LAYOUT] or list(LAYOUT):

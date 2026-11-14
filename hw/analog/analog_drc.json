@@ -1,15 +1,11 @@
 {
     "$schema": "https://schemas.kicad.org/drc.v1.json",
     "coordinate_units": "mm",
-    "date": "2026-11-11T16:26:38",
+    "date": "2026-11-14T15:14:35",
     "ignored_checks": [
         {
             "description": "Footprint has no courtyard defined",
             "key": "missing_courtyard"
-        },
-        {
-            "description": "Track endpoint not centered on via",
-            "key": "track_not_centered_on_via"
         },
         {
             "description": "Tuning profile track geometries",
@@ -29,73 +25,140 @@
         "warning",
         "exclusion"
     ],
-    "kicad_version": "10.0.7",
+    "kicad_version": "10.0.8",
     "schematic_parity": [],
     "source": "analog.kicad_pcb",
     "unconnected_items": [],
     "violations": [
         {
+            "description": "Silkscreen clearance",
+            "items": [
+                {
+                    "description": "Segment of R9 on B.Silkscreen",
+                    "pos": {
+                        "x": 99.504724,
+                        "y": 136.0225
+                    },
+                    "uuid": "021446f3-63e5-47ee-b8b6-960903f59588"
+                },
+                {
+                    "description": "Reference field of R9",
+                    "pos": {
+                        "x": 99.25,
+                        "y": 136.5
+                    },
+                    "uuid": "f3374c6a-49b7-435e-b3f7-16d01a0a9983"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_overlap"
+        },
+        {
             "description": "Silkscreen clipped by solder mask",
             "items": [
                 {
-                    "description": "Reference field of R3",
+                    "description": "Reference field of R13",
                     "pos": {
-                        "x": 83.0,
-                        "y": 152.43
+                        "x": 97.5,
+                        "y": 136.5
                     },
-                    "uuid": "cf6eb55e-5df4-4a88-bc46-71c76f2bb865"
+                    "uuid": "81af6bad-d6f4-4b87-9986-1dcfd78db949"
                 },
                 {
-                    "description": "Pad 1 [/NTC1] of C4 on B.Cu",
+                    "description": "Pad 1 [+3V3] of R13 on B.Cu",
                     "pos": {
-                        "x": 82.1375,
-                        "y": 153.0
+                        "x": 96.5875,
+                        "y": 137.25
                     },
-                    "uuid": "73ef04b8-86e8-4dd7-9ac9-de5d691f026f"
+                    "uuid": "1c9e4f3f-a88b-4e07-b6e3-9dafaa86d24f"
                 }
             ],
             "severity": "warning",
             "type": "silk_over_copper"
         },
         {
-            "description": "Silkscreen clipped by solder mask",
+            "description": "The current configuration does not include the footprint library 'Library'",
             "items": [
                 {
-                    "description": "Segment of J1 on B.Silkscreen",
+                    "description": "Footprint G***",
                     "pos": {
-                        "x": 104.58,
-                        "y": 157.9
+                        "x": 85.0,
+                        "y": 138.5
                     },
-                    "uuid": "857ab61c-253d-4455-bbfc-3c12ea552b3c"
+                    "uuid": "8cb2fa1b-63b7-4327-8896-2b65c8ae543a"
+                }
+            ],
+            "severity": "warning",
+            "type": "lib_footprint_issues"
+        },
+        {
+            "comment": "",
+            "description": "Silkscreen clearance",
+            "excluded": true,
+            "items": [
+                {
+                    "description": "Segment of R13 on B.Silkscreen",
+                    "pos": {
+                        "x": 97.245276,
+                        "y": 136.7275
+                    },
+                    "uuid": "2060f577-5f81-479b-9319-ec3647fa849d"
                 },
                 {
-                    "description": "PTH pad SH [GND] of J1",
+                    "description": "Reference field of R13",
                     "pos": {
-                        "x": 104.32,
-                        "y": 160.6
+                        "x": 97.5,
+                        "y": 136.5
                     },
-                    "uuid": "48499ab4-f5f2-474e-bddc-d644c08aca45"
+                    "uuid": "81af6bad-d6f4-4b87-9986-1dcfd78db949"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_overlap"
+        },
+        {
+            "comment": "",
+            "description": "Silkscreen clipped by solder mask",
+            "excluded": true,
+            "items": [
+                {
+                    "description": "Reference field of R9",
+                    "pos": {
+                        "x": 99.25,
+                        "y": 136.5
+                    },
+                    "uuid": "f3374c6a-49b7-435e-b3f7-16d01a0a9983"
+                },
+                {
+                    "description": "Pad 1 [/LIM_N] of R11 on B.Cu",
+                    "pos": {
+                        "x": 100.0875,
+                        "y": 137.25
+                    },
+                    "uuid": "0741f7aa-d201-49ab-b4db-895a13e67d90"
                 }
             ],
             "severity": "warning",
             "type": "silk_over_copper"
         },
         {
+            "comment": "",
             "description": "Silkscreen clipped by solder mask",
+            "excluded": true,
             "items": [
                 {
                     "description": "Segment of J1 on B.Silkscreen",
                     "pos": {
-                        "x": 95.42,
-                        "y": 157.9
+                        "x": 80.42,
+                        "y": 145.6
                     },
                     "uuid": "c280ea70-fc70-4f30-9b38-30d0d7d09f47"
                 },
                 {
                     "description": "PTH pad SH [GND] of J1",
                     "pos": {
-                        "x": 95.68,
-                        "y": 160.6
+                        "x": 80.68,
+                        "y": 148.3
                     },
                     "uuid": "e4f0000d-2ce3-4b03-8dec-3f12036d151c"
                 }
@@ -104,113 +167,98 @@
             "type": "silk_over_copper"
         },
         {
+            "comment": "",
             "description": "Silkscreen clipped by solder mask",
+            "excluded": true,
             "items": [
                 {
-                    "description": "Reference field of R15",
+                    "description": "Segment of J1 on B.Silkscreen",
                     "pos": {
-                        "x": 102.18,
-                        "y": 147.9
+                        "x": 89.58,
+                        "y": 145.6
                     },
-                    "uuid": "e365d866-cfdb-493e-8ad2-e5c1f752b207"
+                    "uuid": "857ab61c-253d-4455-bbfc-3c12ea552b3c"
                 },
                 {
-                    "description": "Pad 1 [Net-(U1-ISET)] of R1 on B.Cu",
+                    "description": "PTH pad SH [GND] of J1",
                     "pos": {
-                        "x": 102.7875,
-                        "y": 148.4
+                        "x": 89.32,
+                        "y": 148.3
                     },
-                    "uuid": "f1c1c6ea-4eaa-48b3-8950-dbee264d7675"
+                    "uuid": "48499ab4-f5f2-474e-bddc-d644c08aca45"
                 }
             ],
             "severity": "warning",
             "type": "silk_over_copper"
         },
         {
+            "comment": "",
             "description": "Silkscreen clipped by solder mask",
+            "excluded": true,
             "items": [
                 {
-                    "description": "Reference field of R3",
+                    "description": "Reference field of R9",
                     "pos": {
-                        "x": 83.0,
-                        "y": 152.43
+                        "x": 99.25,
+                        "y": 136.5
                     },
-                    "uuid": "cf6eb55e-5df4-4a88-bc46-71c76f2bb865"
+                    "uuid": "f3374c6a-49b7-435e-b3f7-16d01a0a9983"
                 },
                 {
-                    "description": "Pad 2 [GND] of C4 on B.Cu",
+                    "description": "Pad 2 [/LIM_N] of R13 on B.Cu",
                     "pos": {
-                        "x": 83.8625,
-                        "y": 153.0
+                        "x": 98.4125,
+                        "y": 137.25
                     },
-                    "uuid": "0723e3a6-794f-4b7b-82bd-af9b62c9c0f7"
+                    "uuid": "d9ac4f28-bfce-460c-b457-b1c50718fab8"
                 }
             ],
             "severity": "warning",
             "type": "silk_over_copper"
         },
         {
+            "comment": "",
             "description": "Silkscreen clipped by solder mask",
+            "excluded": true,
             "items": [
                 {
-                    "description": "Reference field of R2",
+                    "description": "Reference field of R13",
                     "pos": {
-                        "x": 116.23,
-                        "y": 147.4
+                        "x": 97.5,
+                        "y": 136.5
                     },
-                    "uuid": "17ae9fb7-1022-41a4-839a-d2e8a9f0744c"
+                    "uuid": "81af6bad-d6f4-4b87-9986-1dcfd78db949"
                 },
                 {
-                    "description": "Pad 1 [/NTC2] of C6 on B.Cu",
+                    "description": "Pad 2 [/LIM_N] of R13 on B.Cu",
                     "pos": {
-                        "x": 116.7375,
-                        "y": 147.3
+                        "x": 98.4125,
+                        "y": 137.25
                     },
-                    "uuid": "4ca7132e-b325-42ae-8779-a2d6ffc1c81c"
+                    "uuid": "d9ac4f28-bfce-460c-b457-b1c50718fab8"
                 }
             ],
             "severity": "warning",
             "type": "silk_over_copper"
         },
         {
+            "comment": "",
             "description": "Silkscreen clipped by board edge",
+            "excluded": true,
             "items": [
                 {
-                    "description": "Polygon on Edge.Cuts",
+                    "description": "Segment on Edge.Cuts",
                     "pos": {
-                        "x": 70.359134,
-                        "y": 135.020254
+                        "x": 109.0,
+                        "y": 150.0
                     },
-                    "uuid": "3a9842f9-2762-4533-90d7-20d403d7ea3c"
-                },
-                {
-                    "description": "Reference field of D1",
-                    "pos": {
-                        "x": 100.0,
-                        "y": 142.65
-                    },
-                    "uuid": "d8db96be-898a-4b44-bf81-3fde96525854"
-                }
-            ],
-            "severity": "warning",
-            "type": "silk_edge_clearance"
-        },
-        {
-            "description": "Silkscreen clipped by board edge",
-            "items": [
-                {
-                    "description": "Polygon on Edge.Cuts",
-                    "pos": {
-                        "x": 134.964242,
-                        "y": 65.0
-                    },
-                    "uuid": "f86fe765-7276-4d0b-8de8-c8bbb9b1dee4"
+                    "uuid": "815ba192-559e-5976-a32e-1f5ae75f16c6"
                 },
                 {
                     "description": "Segment of J1 on B.Silkscreen",
                     "pos": {
-                        "x": 95.42,
-                        "y": 161.8
+                        "x": 80.42,
+                        "y": 149.5
                     },
                     "uuid": "929c28fd-0c38-4e39-ad0b-bd50997a12e6"
                 }
@@ -219,27 +267,171 @@
             "type": "silk_edge_clearance"
         },
         {
+            "comment": "",
             "description": "Silkscreen clipped by board edge",
+            "excluded": true,
             "items": [
                 {
-                    "description": "Polygon on Edge.Cuts",
+                    "description": "Segment on Edge.Cuts",
                     "pos": {
-                        "x": 134.964242,
-                        "y": 65.0
+                        "x": 109.0,
+                        "y": 150.0
                     },
-                    "uuid": "f86fe765-7276-4d0b-8de8-c8bbb9b1dee4"
+                    "uuid": "815ba192-559e-5976-a32e-1f5ae75f16c6"
                 },
                 {
                     "description": "Segment of J1 on B.Silkscreen",
                     "pos": {
-                        "x": 104.58,
-                        "y": 161.8
+                        "x": 89.58,
+                        "y": 149.5
                     },
                     "uuid": "6e23602e-21e8-4c89-8413-77ff590a682b"
                 }
             ],
             "severity": "warning",
             "type": "silk_edge_clearance"
+        },
+        {
+            "comment": "",
+            "description": "Via is not connected or connected on only one layer",
+            "excluded": true,
+            "items": [
+                {
+                    "description": "Via [+3V3] on F.Cu - B.Cu",
+                    "pos": {
+                        "x": 75.0,
+                        "y": 133.75
+                    },
+                    "uuid": "abceebd8-c848-474d-b1e2-294f203d7038"
+                }
+            ],
+            "severity": "warning",
+            "type": "via_dangling"
+        },
+        {
+            "comment": "",
+            "description": "Track endpoint not centered on via",
+            "excluded": true,
+            "items": [
+                {
+                    "description": "Track [VBUS] on F.Cu, length 0,7500 mm",
+                    "pos": {
+                        "x": 85.0,
+                        "y": 146.5
+                    },
+                    "uuid": "0a12f3c0-7e42-40e7-826d-18db1ab04dde"
+                },
+                {
+                    "description": "Via [VBUS] on F.Cu - B.Cu",
+                    "pos": {
+                        "x": 85.5,
+                        "y": 146.5
+                    },
+                    "uuid": "93eacf13-e450-49a9-9395-7ef46dbe9596"
+                }
+            ],
+            "severity": "warning",
+            "type": "track_not_centered_on_via"
+        },
+        {
+            "comment": "",
+            "description": "Track endpoint not centered on via",
+            "excluded": true,
+            "items": [
+                {
+                    "description": "Track [VBUS] on F.Cu, length 0,7500 mm",
+                    "pos": {
+                        "x": 85.0,
+                        "y": 146.5
+                    },
+                    "uuid": "12a6add8-119f-4067-8613-59327ab7340c"
+                },
+                {
+                    "description": "Via [VBUS] on F.Cu - B.Cu",
+                    "pos": {
+                        "x": 84.5,
+                        "y": 146.5
+                    },
+                    "uuid": "198e46e9-c7e2-495e-bf91-5bcef8152174"
+                }
+            ],
+            "severity": "warning",
+            "type": "track_not_centered_on_via"
+        },
+        {
+            "comment": "",
+            "description": "Track endpoint not centered on via",
+            "excluded": true,
+            "items": [
+                {
+                    "description": "Track [VBUS] on B.Cu, length 1,0889 mm",
+                    "pos": {
+                        "x": 85.75,
+                        "y": 146.5
+                    },
+                    "uuid": "0a6c66cc-82a8-4364-bf13-0c19c38cde1d"
+                },
+                {
+                    "description": "Via [VBUS] on F.Cu - B.Cu",
+                    "pos": {
+                        "x": 85.5,
+                        "y": 146.5
+                    },
+                    "uuid": "93eacf13-e450-49a9-9395-7ef46dbe9596"
+                }
+            ],
+            "severity": "warning",
+            "type": "track_not_centered_on_via"
+        },
+        {
+            "comment": "",
+            "description": "Track endpoint not centered on via",
+            "excluded": true,
+            "items": [
+                {
+                    "description": "Track [VBUS] on B.Cu, length 1,5000 mm",
+                    "pos": {
+                        "x": 84.25,
+                        "y": 146.5
+                    },
+                    "uuid": "374e5ff2-c603-4579-872c-7d1b15634933"
+                },
+                {
+                    "description": "Via [VBUS] on F.Cu - B.Cu",
+                    "pos": {
+                        "x": 84.5,
+                        "y": 146.5
+                    },
+                    "uuid": "198e46e9-c7e2-495e-bf91-5bcef8152174"
+                }
+            ],
+            "severity": "warning",
+            "type": "track_not_centered_on_via"
+        },
+        {
+            "comment": "",
+            "description": "Track endpoint not centered on via",
+            "excluded": true,
+            "items": [
+                {
+                    "description": "Track [VBUS] on B.Cu, length 1,0889 mm",
+                    "pos": {
+                        "x": 83.48,
+                        "y": 145.73
+                    },
+                    "uuid": "c2f30048-51b9-479a-87da-a76d42f2d2a8"
+                },
+                {
+                    "description": "Via [VBUS] on F.Cu - B.Cu",
+                    "pos": {
+                        "x": 84.5,
+                        "y": 146.5
+                    },
+                    "uuid": "198e46e9-c7e2-495e-bf91-5bcef8152174"
+                }
+            ],
+            "severity": "warning",
+            "type": "track_not_centered_on_via"
         }
     ]
 }
